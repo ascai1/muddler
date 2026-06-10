@@ -300,7 +300,6 @@ def print_muddle_groups(muddle_groups, initial_index=1, show_context=False, outp
 
 
 def main(filename, initial_index=1, **kwargs):
-  filename = sys.argv[1] if len(sys.argv) > 1 else 'stdin'
   if filename and filename not in ('stdin', '-'):
     with open(filename) as file:
       scale_input = parse_file(file, initial_index=initial_index)
