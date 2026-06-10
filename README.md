@@ -39,10 +39,11 @@ python3 muddler.py --filename <filename> [options]
 
 | Flag | Description |
 |---|---|
-| `<filename>` | Input file path (positional or via `-f` / `--filename`) |
+| `<filename>` | Input file path (positional or via `-f` / `--filename`); if `-` is provided, read from stdin |
 | `--show-context` | Show how each muddle is derived: lists the chain of modes from each input scale, with rotation and mode ordinal at each level |
 | `--initial-index 0\|1` | Whether scale degrees in input/output are 0-indexed or 1-indexed (default: `1`) |
-| `--format` | Output format for each muddle (default: `intervals`); see below |
+| `--format` | Output format for each muddle (default: `degrees`); see below |
+| `--context-format` | Output format used for the context output when `--show-context` is enabled; accepts the same values as `--format`. Defaults to the value of `--format` if not set |
 
 ### Output Formats
 
@@ -90,6 +91,25 @@ If the `input_type` is not specified in the first line, the muddler attempts to 
 
 ---
 
+## Output Structure
+
+Results are printed as numbered **groups**. All muddles within a group are modes of one another (i.e. they share the same interval cycle up to rotation). Within each group, each distinct rotation is listed separately, optionally followed by its derivation context.
+
+```
+Group N: (<interval cycle>)
+
+[<muddle>]
+[Context:]
+[ - ]
+[    <mode chain>]
+
+--------
+```
+
+NOTE: All muddles are sorted in order of their intervals before grouping. As a result, the muddle "groups" are roughly listed from "darkest" to "brightest". The first group is likely to have the smallest intervals near the beginning of the scale, and the most "flats" in the darkest mode (but also the most "sharps" in the brighest mode, and probably also greater interval variety and "hardness"), and the last group is likely to be the closest to an equalized n-EDO scale, the least number of sharps and flats in any mode, and more "softness".
+
+---
+
 ## Examples
 
 ### Example 1: 12-EDO, degrees format
@@ -101,7 +121,7 @@ If the `input_type` is not specified in the first line, the muddler attempts to 
 1 3 4 5 7
 ```
 
-Line 1 selects 7 degrees from 12-EDO (a whole-tone-plus scale). Line 2 then selects 5 degrees from that 7-note subspace.
+Line 1 selects 7 degrees from 12-EDO. Line 2 then selects 5 degrees from that 7-note subspace.
 
 **Run:**
 ```
@@ -208,78 +228,78 @@ Group 1: (1, 5, 5, 6)
 [1, 5, 5, 6]
 Context:
  -
-    [1, 2, 4, 6, 7, 9, 11, 12, 14, 16] (degree 5 / mode 3 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 7, 8, 10] (degree 1 / mode 1 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 2, 4, 6] (degree 7 / mode 4 of scale [1, 3, 5, 7])
+    [1, 2, 2, 1, 2, 2, 1, 2, 2, 2] (degree 5 / mode 3 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 2, 1, 2, 1] (degree 1 / mode 1 of scale [1, 2, 1, 2, 1, 2, 1])
+    [1, 2, 2, 2] (degree 7 / mode 4 of scale [2, 2, 2, 1])
  -
-    [1, 2, 4, 6, 7, 9, 11, 12, 14, 16] (degree 5 / mode 3 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 7, 8, 9] (degree 4 / mode 3 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 2, 4, 6] (degree 7 / mode 4 of scale [1, 3, 5, 7])
+    [1, 2, 2, 1, 2, 2, 1, 2, 2, 2] (degree 5 / mode 3 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 2, 1, 1, 2] (degree 4 / mode 3 of scale [1, 2, 1, 2, 1, 2, 1])
+    [1, 2, 2, 2] (degree 7 / mode 4 of scale [2, 2, 2, 1])
  -
-    [1, 2, 4, 6, 7, 9, 11, 12, 14, 16] (degree 5 / mode 3 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 6, 8, 9] (degree 7 / mode 5 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 2, 4, 6] (degree 7 / mode 4 of scale [1, 3, 5, 7])
+    [1, 2, 2, 1, 2, 2, 1, 2, 2, 2] (degree 5 / mode 3 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 1, 2, 1, 2] (degree 7 / mode 5 of scale [1, 2, 1, 2, 1, 2, 1])
+    [1, 2, 2, 2] (degree 7 / mode 4 of scale [2, 2, 2, 1])
  -
-    [1, 2, 4, 6, 7, 9, 11, 12, 14, 16] (degree 5 / mode 3 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 3, 5, 6, 8, 9] (degree 10 / mode 7 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 2, 4, 6] (degree 7 / mode 4 of scale [1, 3, 5, 7])
+    [1, 2, 2, 1, 2, 2, 1, 2, 2, 2] (degree 5 / mode 3 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 1, 2, 1, 2, 1, 2] (degree 10 / mode 7 of scale [1, 2, 1, 2, 1, 2, 1])
+    [1, 2, 2, 2] (degree 7 / mode 4 of scale [2, 2, 2, 1])
 
 [5, 5, 6, 1]
 Context:
  -
-    [1, 3, 5, 6, 8, 10, 11, 13, 15, 17] (degree 6 / mode 4 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 7, 8, 10] (degree 1 / mode 1 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 5, 7] (degree 1 / mode 1 of scale [1, 3, 5, 7])
+    [2, 2, 1, 2, 2, 1, 2, 2, 2, 1] (degree 6 / mode 4 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 2, 1, 2, 1] (degree 1 / mode 1 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 2, 2, 1] (degree 1 / mode 1 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 6, 8, 10, 11, 13, 15, 17] (degree 6 / mode 4 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 3, 4, 6, 7, 9, 10] (degree 2 / mode 2 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 5, 7] (degree 1 / mode 1 of scale [1, 3, 5, 7])
+    [2, 2, 1, 2, 2, 1, 2, 2, 2, 1] (degree 6 / mode 4 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [2, 1, 2, 1, 2, 1, 1] (degree 2 / mode 2 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 2, 2, 1] (degree 1 / mode 1 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 6, 8, 10, 11, 13, 15, 17] (degree 6 / mode 4 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 3, 4, 6, 7, 8, 10] (degree 5 / mode 4 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 5, 7] (degree 1 / mode 1 of scale [1, 3, 5, 7])
+    [2, 2, 1, 2, 2, 1, 2, 2, 2, 1] (degree 6 / mode 4 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [2, 1, 2, 1, 1, 2, 1] (degree 5 / mode 4 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 2, 2, 1] (degree 1 / mode 1 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 6, 8, 10, 11, 13, 15, 17] (degree 6 / mode 4 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 3, 4, 5, 7, 8, 10] (degree 8 / mode 6 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 5, 7] (degree 1 / mode 1 of scale [1, 3, 5, 7])
+    [2, 2, 1, 2, 2, 1, 2, 2, 2, 1] (degree 6 / mode 4 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [2, 1, 1, 2, 1, 2, 1] (degree 8 / mode 6 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 2, 2, 1] (degree 1 / mode 1 of scale [2, 2, 2, 1])
 
 [5, 6, 1, 5]
 Context:
  -
-    [1, 3, 5, 6, 8, 10, 12, 13, 15, 17] (degree 11 / mode 7 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 7, 8, 10] (degree 1 / mode 1 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 5, 6] (degree 3 / mode 2 of scale [1, 3, 5, 7])
+    [2, 2, 1, 2, 2, 2, 1, 2, 2, 1] (degree 11 / mode 7 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 2, 1, 2, 1] (degree 1 / mode 1 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 2, 1, 2] (degree 3 / mode 2 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 6, 8, 10, 12, 13, 15, 17] (degree 11 / mode 7 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 7, 8, 9] (degree 4 / mode 3 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 5, 6] (degree 3 / mode 2 of scale [1, 3, 5, 7])
+    [2, 2, 1, 2, 2, 2, 1, 2, 2, 1] (degree 11 / mode 7 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 2, 1, 1, 2] (degree 4 / mode 3 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 2, 1, 2] (degree 3 / mode 2 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 6, 8, 10, 12, 13, 15, 17] (degree 11 / mode 7 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 3, 4, 6, 7, 8, 10] (degree 5 / mode 4 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 5, 6] (degree 3 / mode 2 of scale [1, 3, 5, 7])
+    [2, 2, 1, 2, 2, 2, 1, 2, 2, 1] (degree 11 / mode 7 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [2, 1, 2, 1, 1, 2, 1] (degree 5 / mode 4 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 2, 1, 2] (degree 3 / mode 2 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 6, 8, 10, 12, 13, 15, 17] (degree 11 / mode 7 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 3, 4, 5, 7, 8, 10] (degree 8 / mode 6 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 5, 6] (degree 3 / mode 2 of scale [1, 3, 5, 7])
+    [2, 2, 1, 2, 2, 2, 1, 2, 2, 1] (degree 11 / mode 7 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [2, 1, 1, 2, 1, 2, 1] (degree 8 / mode 6 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 2, 1, 2] (degree 3 / mode 2 of scale [2, 2, 2, 1])
 
 [6, 1, 5, 5]
 Context:
  -
-    [1, 3, 5, 7, 8, 10, 12, 13, 15, 17] (degree 16 / mode 10 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 7, 8, 10] (degree 1 / mode 1 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 4, 6] (degree 5 / mode 3 of scale [1, 3, 5, 7])
+    [2, 2, 2, 1, 2, 2, 1, 2, 2, 1] (degree 16 / mode 10 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 2, 1, 2, 1] (degree 1 / mode 1 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 1, 2, 2] (degree 5 / mode 3 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 7, 8, 10, 12, 13, 15, 17] (degree 16 / mode 10 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 7, 8, 9] (degree 4 / mode 3 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 4, 6] (degree 5 / mode 3 of scale [1, 3, 5, 7])
+    [2, 2, 2, 1, 2, 2, 1, 2, 2, 1] (degree 16 / mode 10 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 2, 1, 1, 2] (degree 4 / mode 3 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 1, 2, 2] (degree 5 / mode 3 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 7, 8, 10, 12, 13, 15, 17] (degree 16 / mode 10 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 2, 4, 5, 6, 8, 9] (degree 7 / mode 5 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 4, 6] (degree 5 / mode 3 of scale [1, 3, 5, 7])
+    [2, 2, 2, 1, 2, 2, 1, 2, 2, 1] (degree 16 / mode 10 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [1, 2, 1, 1, 2, 1, 2] (degree 7 / mode 5 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 1, 2, 2] (degree 5 / mode 3 of scale [2, 2, 2, 1])
  -
-    [1, 3, 5, 7, 8, 10, 12, 13, 15, 17] (degree 16 / mode 10 of scale [1, 3, 5, 6, 8, 10, 11, 13, 15, 16])
-    [1, 3, 4, 5, 7, 8, 10] (degree 8 / mode 6 of scale [1, 2, 4, 5, 7, 8, 10])
-    [1, 3, 4, 6] (degree 5 / mode 3 of scale [1, 3, 5, 7])
+    [2, 2, 2, 1, 2, 2, 1, 2, 2, 1] (degree 16 / mode 10 of scale [2, 2, 1, 2, 2, 1, 2, 2, 1, 2])
+    [2, 1, 1, 2, 1, 2, 1] (degree 8 / mode 6 of scale [1, 2, 1, 2, 1, 2, 1])
+    [2, 1, 2, 2] (degree 5 / mode 3 of scale [2, 2, 2, 1])
 
 --------
 
@@ -294,20 +314,7 @@ Each context entry traces the specific chain of modes that produced the muddle: 
 
 ---
 
-## Output Structure
+![Muddle ~~Instead Of~~ With Your Music!](./muddle_instead_of_music.png)
 
-Results are printed as numbered **groups**. All muddles within a group are modes of one another (i.e. they share the same interval cycle up to rotation). Within each group, each distinct rotation is listed separately, optionally followed by its derivation context.
-
-```
-Group N: (<interval cycle>)
-
-[<muddle>]
-[Context:]
-[ - ]
-[    <mode chain>]
-
---------
-```
-
-NOTE: All muddles are sorted in order of their intervals before grouping. As a result, the muddle "groups" are roughly listed from "darkest" to "brightest". The first group is likely to have the smallest intervals near the beginning of the scale, and the most "flats" in the darkest mode (but also the most "sharps" in the brighest mode, and probably also greater interval variety and "hardness"), and the last group is likely to be the closest to an equalized n-EDO scale, the least number of sharps and flats in any mode, and more "softness".
+*Muddle ~~Instead Of~~ With Your Music!*
 

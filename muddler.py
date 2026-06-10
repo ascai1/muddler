@@ -74,8 +74,14 @@ def parse_args():
   parser.add_argument(
     '--format',
     choices=[INTERVAL_FORMAT, DEGREE_FORMAT, DEGREE_AND_INTERVAL_FORMAT, SW_FORMAT],
-    default=INTERVAL_FORMAT,
+    default=DEGREE_FORMAT,
     help='Specify the output formatting style, showing each muddle as a list of intervals, EDO degrees, both, or in Scale Workshop compatible format.'
+  )
+  parser.add_argument(
+    '--context-format',
+    choices=[INTERVAL_FORMAT, DEGREE_FORMAT, DEGREE_AND_INTERVAL_FORMAT, SW_FORMAT],
+    default=None,
+    help='Specify the output formatting style of the muddle derivation context.'
   )
   args = parser.parse_args()
   filename = args.filename if args.filename else args.positional_filename
@@ -124,6 +130,10 @@ def convert_binary_to_degrees(scale):
 def convert_degrees_to_intervals(degrees, edo):
   degree_pairs = zip(degrees, degrees[1:] + (degrees[0],))
   return tuple((b + edo - a) % edo for a, b in degree_pairs)
+
+
+def convert_binary_to_intervals(scale, edo):
+  return convert_degrees_to_intervals(convert_binary_to_degrees(scale), edo)
 
 
 def parse_scale(line, edo, input_type=None, initial_index=1):
@@ -241,43 +251,55 @@ def permute(scale_input):
   return muddle_groups
 
 
-def print_muddle(muddle, initial_index=1, output_format=None):
+def get_muddle_str(muddle, initial_index=1, output_format=None):
   if output_format == DEGREE_FORMAT:
-    print(list(degree + initial_index for degree in muddle.degrees))
+    return str(list(degree + initial_index for degree in muddle.degrees))
   elif output_format == SW_FORMAT:
-    for degree in muddle.degrees:
-      print(f"{degree + initial_index}\\{muddle.edo}")
+    return '\n'.join(f"{degree + initial_index}\\{muddle.edo}" for degree in muddle.degrees)
   elif output_format == DEGREE_AND_INTERVAL_FORMAT:
     degrees = list(degree + initial_index for degree in muddle.degrees)
-    print(f"{degrees} {muddle.intervals}")
+    return str(f"{degrees} {muddle.intervals}")
   else:
-    print(list(muddle.intervals))
+    return str(list(muddle.intervals))
   
 
-def print_muddle_groups(muddle_groups, initial_index=1, show_context=False, output_format=None):
-  i = 1
-  for key, muddle_group in muddle_groups.items():
-    print(f"Group {i}: {key}")
-    i += 1
+def print_muddle_groups(muddle_groups, initial_index=1, show_context=False, output_format=None, context_format=None, **kwargs):
+  context_format = context_format or output_format
+  for i, (key, muddle_group) in enumerate(muddle_groups.items()):
+    print(f"Group {i + 1}: {key}")
     for order, muddles in sorted(muddle_group.items()):
       print()
-      print_muddle(muddles[0], initial_index=initial_index, output_format=output_format)
+      print(get_muddle_str(muddles[0], initial_index=initial_index, output_format=output_format))
       if show_context:
         print("Context:")
         for muddle in muddles:
           print(" -")
           for mode in muddle.modes:
-            mode_degrees = list(degree + initial_index for degree in convert_binary_to_degrees(mode.mode))
-            scale_degrees = list(degree + initial_index for degree in convert_binary_to_degrees(mode.scale.scale))
+            mode_muddle = Muddle(
+              scale=mode.mode,
+              edo=mode.edo,
+              degrees=convert_binary_to_degrees(mode.mode),
+              intervals=convert_binary_to_intervals(mode.mode, mode.edo),
+              modes=[]
+            )
+            scale_muddle = Muddle(
+              scale=mode.scale.scale,
+              edo=mode.edo,
+              degrees=convert_binary_to_degrees(mode.scale.scale),
+              intervals=convert_binary_to_intervals(mode.scale.scale, mode.edo),
+              modes=[]
+            )
             root_degree = mode.root_degree + initial_index
             root_mos_degree = mode.root_mos_degree + initial_index
-            print(f"    {mode_degrees} (degree {root_degree} / mode {root_mos_degree} of scale {scale_degrees})")
+            mode_str = " ".join(get_muddle_str(mode_muddle, initial_index=initial_index, output_format=context_format).split())
+            scale_str = " ".join(get_muddle_str(scale_muddle, initial_index=initial_index, output_format=context_format).split())
+            print(f"    {mode_str} (degree {root_degree} / mode {root_mos_degree} of scale {scale_str})")
     print()
     print('-'*8)
     print()
 
 
-def main(filename, initial_index=1, show_context=False, output_format=None):
+def main(filename, initial_index=1, **kwargs):
   filename = sys.argv[1] if len(sys.argv) > 1 else 'stdin'
   if filename and filename not in ('stdin', '-'):
     with open(filename) as file:
@@ -285,9 +307,12 @@ def main(filename, initial_index=1, show_context=False, output_format=None):
   else:
     scale_input = parse_file(sys.stdin, initial_index=initial_index)
   muddle_groups = permute(scale_input)
-  print_muddle_groups(muddle_groups, initial_index=initial_index, show_context=show_context, output_format=output_format)
+  print_muddle_groups(muddle_groups, initial_index=initial_index, **kwargs)
 
 
 if __name__ == '__main__':
   args = parse_args()
-  main(args.filename, initial_index=args.initial_index, show_context=args.show_context, output_format=args.format)
+  main(
+    args.filename, initial_index=args.initial_index, show_context=args.show_context, output_format=args.format,
+    context_format=args.context_format
+  )
