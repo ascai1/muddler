@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-import argparse
 import re
 import sys
 import itertools
@@ -54,41 +52,6 @@ class Muddle:
   intervals: tuple[int]
   modes: list[Mode]
 
-
-def parse_args():
-  parser = argparse.ArgumentParser()
-  parser.add_argument("positional_filename", nargs="?")
-  parser.add_argument("-f", "--filename", help="Input file path.")
-  parser.add_argument(
-    "--show-context",
-    action="store_true",
-    help="Show output explaining how each muddle is derived."
-  )
-  parser.add_argument(
-    "--initial-index",
-    type=int,
-    choices=[0, 1],
-    default=1,
-    help="Set the starting index (0 or 1). Default is 1.",
-  )
-  parser.add_argument(
-    '--format',
-    choices=[INTERVAL_FORMAT, DEGREE_FORMAT, DEGREE_AND_INTERVAL_FORMAT, SW_FORMAT],
-    default=DEGREE_FORMAT,
-    help='Specify the output formatting style, showing each muddle as a list of intervals, EDO degrees, both, or in Scale Workshop compatible format.'
-  )
-  parser.add_argument(
-    '--context-format',
-    choices=[INTERVAL_FORMAT, DEGREE_FORMAT, DEGREE_AND_INTERVAL_FORMAT, SW_FORMAT],
-    default=None,
-    help='Specify the output formatting style of the muddle derivation context.'
-  )
-  args = parser.parse_args()
-  filename = args.filename if args.filename else args.positional_filename
-  if not filename:
-    parser.error("Filename must be provided")
-  args.filename = filename
-  return args
 
 
 def convert_tokens_to_binary(tokens, edo):
@@ -150,7 +113,7 @@ def parse_scale(line, edo, input_type=None, initial_index=1):
   lcm = math.lcm(*(token.denominator for token in tokens))
   tokens = [int(token.numerator * lcm / token.denominator) for token in tokens]
   if input_type is None:
-    if every(token <= 1 for token in tokens):
+    if all(token <= 1 for token in tokens):
       input_type = ON_OFF
     elif sum(tokens) <= edo:  # just a heuristic
       input_type = INTERVALS
@@ -168,7 +131,7 @@ def parse_scale(line, edo, input_type=None, initial_index=1):
 
 
 def parse_edo(token):
-  edo = re.search('\d+', token)
+  edo = re.search(r'\d+', token)
   if not edo:
     raise Exception('EDO size must be numeric')
   return int(edo.group(0))
@@ -297,21 +260,3 @@ def print_muddle_groups(muddle_groups, initial_index=1, show_context=False, outp
     print()
     print('-'*8)
     print()
-
-
-def main(filename, initial_index=1, **kwargs):
-  if filename and filename not in ('stdin', '-'):
-    with open(filename) as file:
-      scale_input = parse_file(file, initial_index=initial_index)
-  else:
-    scale_input = parse_file(sys.stdin, initial_index=initial_index)
-  muddle_groups = permute(scale_input)
-  print_muddle_groups(muddle_groups, initial_index=initial_index, **kwargs)
-
-
-if __name__ == '__main__':
-  args = parse_args()
-  main(
-    args.filename, initial_index=args.initial_index, show_context=args.show_context, output_format=args.format,
-    context_format=args.context_format
-  )

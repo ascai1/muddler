@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "muddler"
+version = "0.1.0"
+description = "Xenharmonic muddle generator with a Flask API"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "flask>=3.0",
+]
+
+[project.optional-dependencies]
+serve = [
+    "gunicorn>=22.0",
+]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+muddler = "muddler.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/muddler"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
