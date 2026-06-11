@@ -91,6 +91,14 @@ code {
   margin-top: 2px;
 }
 
+.subtitle-link {
+  font-size: .78rem;
+  color: var(--accent);
+  opacity: .8;
+  white-space: nowrap;
+}
+.subtitle-link:hover { opacity: 1; }
+
 .about-btn {
   font-family: var(--font-ui);
   font-size: .8rem;
@@ -664,6 +672,17 @@ label {
 .modal-body p, .modal-body ul, .modal-body ol { margin-bottom: 10px; }
 .modal-body li { margin-left: 18px; margin-bottom: 4px; }
 .modal-body strong { font-weight: 600; }
+
+.modal-notice {
+  font-size: .8rem;
+  color: #7c5c00;
+  background: #fef9e7;
+  border: 1px solid #f0d060;
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
 
 /* ─── Scrollbar styling ───────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/muddler/style.css" />
 </head>
 <body>
 
@@ -19,6 +19,12 @@
       <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
     </div>
     <div class="modal-body">
+      <div class="modal-notice">
+        This is a limited web version: max 128-EDO, 6 scale rows, 4 KB input.
+        For larger or more complex inputs, use the
+        <a href="https://github.com/ascai1/muddler" target="_blank" rel="noopener">full Python script</a>.
+      </div>
+
       <p>A tool for generating <strong>xenharmonic muddles</strong>: pitch collections derived by recursively nesting MOS (Moment of Symmetry) scales inside one another across arbitrary EDO (Equal Division of the Octave) spaces.</p>
 
       <h3>Concept</h3>
@@ -57,10 +63,10 @@
 
   <header class="app-header">
     <div class="header-left">
-      <img src="./muddle_instead_of_music.png" alt="Muddle Instead Of Music" class="logo" width="250" />
+      <img src="/muddler/muddle_instead_of_music.png" alt="Muddle Instead Of Music" class="logo" width="250" />
       <div class="header-text">
         <h1>The Muddler</h1>
-        <p class="subtitle">Generate xenharmonic muddles.</p>
+        <p class="subtitle">Generate xenharmonic muddles. &ensp;<a class="subtitle-link" href="https://github.com/ascai1/muddler" target="_blank" rel="noopener">Full Python script ↗</a></p>
       </div>
     </div>
     <button class="about-btn" id="about-btn">About</button>
@@ -146,6 +152,6 @@
 
 </div><!-- /app -->
 
-<script src="app.js"></script>
+<script src="/muddler/app.js"></script>
 </body>
 </html>

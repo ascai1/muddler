@@ -375,7 +375,6 @@ function refreshModeLabels() {
   });
 }
 
-/* ─── API call ─────────────────────────────────────────────────────────────── */
 async function generate() {
   const content = buildContent();
   if (!content) {
@@ -387,7 +386,7 @@ async function generate() {
   setStatus('Generating...', '');
 
   try {
-    const res = await fetch('/muddle', {
+    const res = await fetch('/muddler/muddle', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content, initial_index: 1 }),
