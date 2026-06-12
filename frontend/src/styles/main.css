@@ -133,6 +133,7 @@ code {
 .panel-input {
   border-right: 1px solid var(--border);
   max-width: 480px;
+  width: 100%;
 }
 
 .panel-results { flex: 1 1 0; }
@@ -564,12 +565,13 @@ label {
 
 .mode-tooltip--portal {
   position: absolute;
-  width: 280px;
+  max-width: 500px;
+  width: max-content;
   background: #1f2937;
   color: #e5e7eb;
   font-family: var(--font-mono);
   font-size: .7rem;
-  line-height: 1.6;
+  line-height: 1.4;
   padding: 10px 12px;
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 16px rgba(0,0,0,.25);
@@ -708,4 +710,34 @@ label {
 /* ─── Reduced motion ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0ms !important; }
+}
+
+@media (max-width: 768px) {
+  html, body, .app {
+    height: auto;
+    overflow: auto;
+  }
+
+  .app-body {
+    flex-direction: column;
+    overflow: visible;
+    height: auto;
+  }
+
+  .panel {
+    flex: none;
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .panel-input {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel-scroll {
+    overflow-y: visible;
+    padding: 12px;
+  }
 }

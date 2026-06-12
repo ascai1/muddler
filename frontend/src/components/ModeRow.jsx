@@ -14,15 +14,14 @@ function getAudioCtx() {
 }
 
 // ─── Playback ─────────────────────────────────────────────────────────────────
-const BASE_HZ   = 440;
 const SLOW_BPM  = 100;
 const FAST_BPM  = 500;
 const HOLD_S    = 2;
 const FADE_S    = 0.015; // cross-fade between notes to avoid clicks
 const PEAK      = 0.8;
 
-function edoFreq(degree0indexed, totalEdo) {
-  return BASE_HZ * Math.pow(2, degree0indexed / totalEdo);
+function edoFreq(baseHz, degree0indexed, totalEdo) {
+  return baseHz * Math.pow(2, degree0indexed / totalEdo);
 }
 
 // Schedule a single note: ramp to freq at startTime, hold for dur seconds,
@@ -47,7 +46,7 @@ function scheduleNote(ctx, masterGain, freq, startTime, dur, peak) {
 
 // Build and schedule the full playback sequence.
 // Returns a stop() function that silences everything immediately.
-function playMode(degrees1indexed, totalEdo) {
+function playMode(baseHz, degrees1indexed, totalEdo) {
   const ctx = getAudioCtx();
 
   // Master gain so we can silence all notes at once on stop
@@ -69,14 +68,14 @@ function playMode(degrees1indexed, totalEdo) {
 
   // 1. Ascending
   for (const d of withOctave) {
-    oscs.push(scheduleNote(ctx, master, edoFreq(d, totalEdo), t, slowDur, peak));
+    oscs.push(scheduleNote(ctx, master, edoFreq(baseHz, d, totalEdo), t, slowDur, peak));
     t += slowDur;
   }
 
   // 2. Descending (omit the octave top which was just played, omit root which comes next)
   const descending = [...withOctave].reverse().slice(1);
   for (const d of descending) {
-    oscs.push(scheduleNote(ctx, master, edoFreq(d, totalEdo), t, slowDur, peak));
+    oscs.push(scheduleNote(ctx, master, edoFreq(baseHz, d, totalEdo), t, slowDur, peak));
     t += slowDur;
   }
 
@@ -95,7 +94,7 @@ function playMode(degrees1indexed, totalEdo) {
     osc.type = 'sine';
     osc.connect(gain);
     gain.connect(master);
-    osc.frequency.setValueAtTime(edoFreq(withOctave[i], totalEdo), attackTime);
+    osc.frequency.setValueAtTime(edoFreq(baseHz, withOctave[i], totalEdo), attackTime);
     gain.gain.setValueAtTime(0, attackTime);
     gain.gain.linearRampToValueAtTime(peak, attackTime + FADE_S);
     // Exponential decay from peak to near-zero over the remaining sustain window
@@ -179,7 +178,7 @@ function InfoButton({ content }) {
 }
 
 // ─── Play / Stop buttons ──────────────────────────────────────────────────────
-function PlayControls({ degrees, totalEdo }) {
+function PlayControls({ degrees, totalEdo, baseHz }) {
   const stopRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
@@ -188,7 +187,7 @@ function PlayControls({ degrees, totalEdo }) {
 
   function handlePlay() {
     stopRef.current?.();
-    stopRef.current = playMode(degrees, totalEdo);
+    stopRef.current = playMode(baseHz, degrees, totalEdo);
     setPlaying(true);
 
     // Compute total duration and auto-reset state
@@ -226,14 +225,14 @@ function PlayControls({ degrees, totalEdo }) {
 }
 
 // ─── ModeRow ──────────────────────────────────────────────────────────────────
-export default function ModeRow({ mode, totalEdo, displayFormat }) {
+export default function ModeRow({ mode, totalEdo, displayFormat, baseHz }) {
   const degreeSet = new Set(mode.degrees);
   const label = getModeLabel(mode, totalEdo, displayFormat);
   const hasContext = mode.context && mode.context.length > 0;
 
   return (
     <div className="mode-row">
-      <PlayControls degrees={mode.degrees} totalEdo={totalEdo} />
+      <PlayControls degrees={mode.degrees} totalEdo={totalEdo} baseHz={baseHz} />
 
       <div className="mode-cells">
         {Array.from({ length: totalEdo }, (_, i) => i + 1).map((d) => (

@@ -3,22 +3,41 @@ import GroupAccordion from './GroupAccordion.jsx';
 
 export default function ResultsPanel({ results }) {
   const [displayFormat, setDisplayFormat] = useState('degrees');
+  const [baseHz, setBaseHz] = useState(432);
 
   return (
     <section className="panel panel-results" aria-label="Results">
       <div className="results-toolbar">
         <span className="results-title">Results</span>
-        <div className="field-group field-group--inline">
-          <label htmlFor="display-format">Show as</label>
-          <select
-            id="display-format"
-            className="format-select format-select--sm"
-            value={displayFormat}
-            onChange={(e) => setDisplayFormat(e.target.value)}
-          >
-            <option value="degrees">n\N degrees</option>
-            <option value="intervals">Intervals</option>
-          </select>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div className="field-group field-group--inline">
+            <label htmlFor="display-format">Show as</label>
+            <select
+              id="display-format"
+              className="format-select format-select--sm"
+              value={displayFormat}
+              onChange={(e) => setDisplayFormat(e.target.value)}
+            >
+              <option value="degrees">n\N degrees</option>
+              <option value="intervals">Intervals</option>
+            </select>
+          </div>
+
+          <div className="field-group field-group--inline">
+            <label htmlFor="base-hz">Base Hz</label>
+            <input
+              id="base-hz"
+              type="number"
+              className="interval-input"
+              style={{ width: '64px', textAlign: 'left' }}
+              value={baseHz}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value);
+                setBaseHz(isNaN(val) ? '' : val);
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -40,6 +59,7 @@ export default function ResultsPanel({ results }) {
                 key={group.group}
                 group={group}
                 displayFormat={displayFormat}
+                baseHz={Number(baseHz) || 432}
               />
             ))}
           </div>

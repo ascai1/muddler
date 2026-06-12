@@ -14,7 +14,7 @@ function getGroupLabel(group, displayFormat) {
   return `Group ${group.group}: ${degreesStr}`;
 }
 
-export default function GroupAccordion({ group, displayFormat }) {
+export default function GroupAccordion({ group, displayFormat, baseHz }) {
   const [open, setOpen] = useState(true);
   const totalEdo = group.interval_cycle.reduce((a, b) => a + b, 0);
 
@@ -37,6 +37,7 @@ export default function GroupAccordion({ group, displayFormat }) {
               mode={mode}
               totalEdo={totalEdo}
               displayFormat={displayFormat}
+              baseHz={baseHz}
             />
           ))}
         </div>

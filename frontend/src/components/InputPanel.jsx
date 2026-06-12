@@ -119,6 +119,19 @@ export default function InputPanel({ onGenerate, status, loading }) {
               Paste or type muddler input directly. The first line must be{' '}
               <code>NNedo [format]</code>.
             </p>
+            <p className="hint" style={{ marginTop: '6px' }}>
+              The raw text input supports <code>n\N</code> notation from{' '}
+              <a
+                href="https://scaleworkshop.plainsound.org/?version=3.3.1#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="subtitle-link"
+                style={{ opacity: 1, textDecoration: 'underline' }}
+              >
+                Scale Workshop
+              </a>{' '}
+              if each scale is specified in one whitespace-delimited line.
+            </p>
           </div>
         )}
 
