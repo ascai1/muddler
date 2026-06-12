@@ -14,7 +14,7 @@ function getAudioCtx() {
 }
 
 // ─── Playback ─────────────────────────────────────────────────────────────────
-const BASE_HZ   = 432;
+const BASE_HZ   = 440;
 const SLOW_BPM  = 100;
 const FAST_BPM  = 500;
 const HOLD_S    = 2;
