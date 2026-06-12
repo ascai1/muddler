@@ -129,15 +129,28 @@ function getModeLabel(mode, totalEdo, displayFormat) {
 }
 
 function ContextTooltip({ anchorRef, children }) {
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [pos, setPos] = useState({ top: -9999, left: -9999 });
+  const tooltipRef = useRef(null);
 
   const reposition = useCallback(() => {
-    if (!anchorRef.current) return;
-    const rect = anchorRef.current.getBoundingClientRect();
-    setPos({
-      top: rect.top + window.scrollY - 8,
-      left: rect.right + window.scrollX,
-    });
+    if (!anchorRef.current || !tooltipRef.current) return;
+    const anchor  = anchorRef.current.getBoundingClientRect();
+    const tip     = tooltipRef.current.getBoundingClientRect();
+    const GAP     = 8;
+    const MARGIN  = 8;
+
+    const spaceAbove = anchor.top;
+    const spaceBelow = window.innerHeight - anchor.bottom;
+    const placeAbove = spaceAbove >= tip.height + GAP || spaceAbove >= spaceBelow;
+
+    const top = placeAbove
+      ? anchor.top - tip.height - GAP
+      : anchor.bottom + GAP;
+
+    let left = anchor.right - tip.width;
+    left = Math.max(MARGIN, Math.min(left, window.innerWidth - tip.width - MARGIN));
+
+    setPos({ top, left });
   }, [anchorRef]);
 
   useEffect(() => {
@@ -151,7 +164,11 @@ function ContextTooltip({ anchorRef, children }) {
   }, [reposition]);
 
   return createPortal(
-    <div className="mode-tooltip mode-tooltip--portal" style={{ top: pos.top, left: pos.left }}>
+    <div
+      ref={tooltipRef}
+      className="mode-tooltip--portal"
+      style={{ top: pos.top, left: pos.left }}
+    >
       {children}
     </div>,
     document.body
@@ -232,22 +249,27 @@ export default function ModeRow({ mode, totalEdo, displayFormat, baseHz }) {
 
   return (
     <div className="mode-row">
-      <PlayControls degrees={mode.degrees} totalEdo={totalEdo} baseHz={baseHz} />
-
-      <div className="mode-cells">
-        {Array.from({ length: totalEdo }, (_, i) => i + 1).map((d) => (
-          <div
-            key={d}
-            className={`mode-cell${degreeSet.has(d) ? ' on' : ''}`}
-            title={`Degree ${d}`}
-          />
-        ))}
+      <div className="mode-row__play">
+        <PlayControls degrees={mode.degrees} totalEdo={totalEdo} baseHz={baseHz} />
       </div>
 
-      <span className="mode-label">{label}</span>
+      <div className="mode-row__centre">
+        <div className="mode-cells">
+          {Array.from({ length: totalEdo }, (_, i) => i + 1).map((d) => (
+            <div
+              key={d}
+              className={`mode-cell${degreeSet.has(d) ? ' on' : ''}`}
+              title={`Degree ${d}`}
+            />
+          ))}
+        </div>
+        <span className="mode-label">{label}</span>
+      </div>
 
       {hasContext && (
-        <InfoButton content={buildContextText(mode.context, displayFormat, totalEdo)} />
+        <div className="mode-row__info">
+          <InfoButton content={buildContextText(mode.context, displayFormat, totalEdo)} />
+        </div>
       )}
     </div>
   );

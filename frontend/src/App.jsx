@@ -13,23 +13,19 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-left">
-          <img src={logo} alt="Muddle Instead Of Music" className="logo" width={250} />
+          <img src={logo} alt="Muddle Instead Of Music" className="logo" />
           <div className="header-text">
             <h1>The Muddler</h1>
             <p className="subtitle">
               Generate xenharmonic muddles.&ensp;
-              <a
-                className="subtitle-link"
-                href="https://github.com/ascai1/muddler"
-                target="_blank"
-                rel="noopener"
-              >
+              <a className="subtitle-link" href="https://github.com/ascai1/muddler" target="_blank" rel="noopener">
                 Full Python script ↗
               </a>
             </p>
+            <button className="about-btn about-btn--inline" onClick={() => setShowAbout(true)}>About</button>
           </div>
         </div>
-        <button className="about-btn" onClick={() => setShowAbout(true)}>About</button>
+        <button className="about-btn about-btn--header" onClick={() => setShowAbout(true)}>About</button>
       </header>
 
       <main className="app-body">

@@ -155,14 +155,12 @@ export default function InputPanel({ onGenerate, status, loading }) {
             </div>
           </>
         )}
-
         <div className="submit-bar">
           <StatusMessage msg={status.msg} kind={status.kind} />
           <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
             Generate muddles →
           </button>
         </div>
-
       </div>
     </section>
   );
