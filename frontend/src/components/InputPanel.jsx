@@ -111,7 +111,7 @@ export default function InputPanel({ onGenerate, status, loading }) {
               className="raw-editor"
               rows={8}
               spellCheck={false}
-              placeholder={'12edo degrees\n1 3 5 6 8 10 12\n1 2 3 5 7'}
+              placeholder={'12edo degrees\n1 3 5 6 8 10 12\n1 2 3 5 6'}
               value={rawText}
               onChange={(e) => handleRawTextChange(e.target.value)}
             />

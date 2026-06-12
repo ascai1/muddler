@@ -79,7 +79,7 @@ function DegreesInput({ row, rowIndex, onChange }) {
   const value = row._degreesText ?? row.degrees.join(' ');
   const placeholder = rowIndex === 0
     ? `e.g. 1 3 5 6 8 10 12  (1-indexed degrees in ${row.edo}-EDO)`
-    : `e.g. 1 3 4 5 7  (1-indexed degrees in previous scale's note count)`;
+    : `e.g. 1 2 3 5 6  (1-indexed degrees in previous scale's note count)`;
 
   return (
     <input
