@@ -513,13 +513,16 @@ label {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  min-width: 0;
 }
 
 .mode-cells {
   display: flex;
+  flex: 1;
   flex-wrap: wrap;
+  min-width: 0;
   gap: 3px;
-  flex-shrink: 0;
 }
 
 .mode-cell {
@@ -739,5 +742,19 @@ label {
   .panel-scroll {
     overflow-y: visible;
     padding: 12px;
+  }
+
+  .mode-row {
+    flex-wrap: wrap;
+  }
+
+  .mode-cells {
+    width: 100%;
+  }
+
+  .mode-label {
+    width: 100%;
+    margin-left: 34px;
+    font-size: 0.8rem;
   }
 }
