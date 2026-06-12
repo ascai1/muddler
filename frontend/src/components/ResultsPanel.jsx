@@ -9,35 +9,29 @@ export default function ResultsPanel({ results }) {
     <section className="panel panel-results" aria-label="Results">
       <div className="results-toolbar">
         <span className="results-title">Results</span>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <div className="field-group field-group--inline">
-            <label htmlFor="display-format">Show as</label>
-            <select
-              id="display-format"
-              className="format-select format-select--sm"
-              value={displayFormat}
-              onChange={(e) => setDisplayFormat(e.target.value)}
-            >
-              <option value="degrees">n\N degrees</option>
-              <option value="intervals">Intervals</option>
-            </select>
-          </div>
-
-          <div className="field-group field-group--inline">
-            <label htmlFor="base-hz">Base Hz</label>
-            <input
-              id="base-hz"
-              type="number"
-              className="interval-input"
-              style={{ width: '64px', textAlign: 'left' }}
-              value={baseHz}
-              onChange={(e) => {
-                const val = parseFloat(e.target.value);
-                setBaseHz(isNaN(val) ? '' : val);
-              }}
-            />
-          </div>
+        <div className="field-group field-group--inline">
+          <label htmlFor="display-format">Show as</label>
+          <select
+            id="display-format"
+            className="format-select format-select--sm"
+            value={displayFormat}
+            onChange={(e) => setDisplayFormat(e.target.value)}
+          >
+            <option value="degrees">n\N degrees</option>
+            <option value="intervals">Intervals</option>
+          </select>
+        </div>
+        <div className="field-group field-group--inline">
+          <label htmlFor="base-hz">Base Hz</label>
+          <input
+            id="base-hz"
+            type="number"
+            className="base-hz-input"
+            value={baseHz}
+            min={1}
+            step={1}
+            onChange={(e) => setBaseHz(parseFloat(e.target.value) || 432)}
+          />
         </div>
       </div>
 
@@ -59,7 +53,7 @@ export default function ResultsPanel({ results }) {
                 key={group.group}
                 group={group}
                 displayFormat={displayFormat}
-                baseHz={Number(baseHz) || 432}
+                baseHz={baseHz}
               />
             ))}
           </div>
