@@ -158,6 +158,9 @@ def muddle():
 def index():
     return send_from_directory('static', 'index.html')
 
+@app.route('/health')
+def health():
+    return 'ok'
 
 if __name__ == "__main__":
     app.run(debug=True)

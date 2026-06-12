@@ -6,6 +6,8 @@ For background on the theory, see the Xen Wiki:
 - [Muddle](https://en.xen.wiki/w/Muddle)
 - [MOS scale](https://en.xen.wiki/w/MOS_scale)
 
+Made the UI with the help of Claude. Sorry. Anything past the initial commit in /frontend is just me.
+
 ---
 
 ## Concept
