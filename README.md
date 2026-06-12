@@ -316,7 +316,7 @@ Each context entry traces the specific chain of modes that produced the muddle: 
 
 ---
 
-![Muddle ~~Instead Of~~ With Your Music!](./muddle_instead_of_music.png)
+![Muddle ~~Instead Of~~ With Your Music!](./frontend/public/muddle_instead_of_music.png)
 
 *Muddle ~~Instead Of~~ With Your Music!*
 
