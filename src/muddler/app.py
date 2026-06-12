@@ -1,6 +1,8 @@
 import io
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import os
+from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -15,10 +17,11 @@ from muddler.core import (
 app = Flask(__name__)
 
 app.config["DEBUG"] = False
-app.config['APPLICATION_ROOT'] = '/muddler'
 
 
 ALLOWED_ORIGIN = os.environ.get("MUDDLER_ORIGIN", "http://localhost:5000")
+LOG_FOLDER = os.environ.get("LOG_FOLDER", "logs")
+STATIC_FOLDER = os.environ.get("STATIC_FOLDER", "static")
 
 CORS(app, resources={r"/muddle": {"origins": ALLOWED_ORIGIN}})
 
@@ -30,11 +33,24 @@ limiter = Limiter(
     headers_enabled=True,   # sends X-RateLimit-* headers so clients can adapt
 )
 
+file_handler = TimedRotatingFileHandler(
+    Path(LOG_FOLDER) / 'flask_app.log',
+    when='midnight',
+    interval=1,
+    backupCount=7,
+    encoding='utf-8'
+)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
 )
 logger = logging.getLogger(__name__)
+
+logger.addHandler(file_handler)
+logger.setLevel(logging.INFO)
+
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.INFO)
 
 
 MAX_CONTENT_BYTES = 4_096       # raw input string length
@@ -156,11 +172,13 @@ def muddle():
 
 @app.route('/')
 def index():
-    return send_from_directory('static', 'index.html')
+    return send_from_directory(STATIC_FOLDER, 'index.html')
+
 
 @app.route('/health')
 def health():
     return 'ok'
+
 
 if __name__ == "__main__":
     app.run(debug=True)
