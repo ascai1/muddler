@@ -5,7 +5,7 @@ import { makeRow, recomputeEdos, buildContent, parseRawText } from '../utils.js'
 
 export default function InputPanel({ onGenerate, status, loading }) {
   const [edo, setEdo]       = useState(12);
-  const [format, setFormat] = useState('binary');
+  const [format, setFormat] = useState('degrees');
   const [rawText, setRawText] = useState('');
   const [rows, setRows]     = useState(() => {
     const { rows } = parseRawText('12edo degrees\n1 3 5 6 8 10 12\n1 2 3 5 6');
@@ -97,9 +97,9 @@ export default function InputPanel({ onGenerate, status, loading }) {
               value={format}
               onChange={(e) => handleFormatChange(e.target.value)}
             >
-              <option value="binary">Binary</option>
               <option value="degrees">Degrees</option>
               <option value="intervals">Intervals</option>
+              <option value="binary">Binary</option>
               <option value="text">Raw text</option>
             </select>
           </div>

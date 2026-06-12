@@ -15,7 +15,7 @@ function getGroupLabel(group, displayFormat) {
 }
 
 export default function GroupAccordion({ group, displayFormat }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const totalEdo = group.interval_cycle.reduce((a, b) => a + b, 0);
 
   return (
