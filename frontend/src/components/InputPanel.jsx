@@ -15,7 +15,7 @@ export default function InputPanel({ onGenerate, status, loading }) {
   const MAX_ROWS = 4;
   const MAX_PRODUCT = 100_000;
 
-  const edoCounts = rows.map(row => row.edo);
+  const edoCounts = rows.map(row => row.locked ? 1 : row.edo);
   const edoProduct = edoCounts.reduce((p, n) => p * n, 1);
   const tooManyRows = rows.length >= MAX_ROWS;
   const tooLarge = edoProduct > MAX_PRODUCT;

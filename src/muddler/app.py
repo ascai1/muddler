@@ -81,12 +81,15 @@ def _validate_content(content: str) -> str | None:
     if edo > MAX_EDO:
         return f"EDO too large (max {MAX_EDO}). {LIMIT_NOTE}"
 
+    def is_locked(line):
+        return any(t.lower() in ('locked', 'lock') for t in line.split())
+
     def token_count(line):
         return len([t for t in line.split() if t.lower() not in ('locked', 'lock')])
 
-    row_edos = [edo]
+    row_edos = [1 if is_locked(scale_lines[0]) else edo]
     for line in scale_lines[:-1]:
-        row_edos.append(token_count(line))
+        row_edos.append(1 if is_locked(line) else token_count(line))
 
     product = 1
     for row_edo in row_edos:
