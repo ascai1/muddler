@@ -55,7 +55,8 @@ app.logger.setLevel(logging.INFO)
 
 MAX_CONTENT_BYTES = 4_096       # raw input string length
 MAX_EDO = 128                   # largest EDO we'll process
-MAX_SCALE_ROWS = 6              # maximum nesting depth
+MAX_SCALE_ROWS = 4              # maximum nesting depth
+MAX_EDO_PRODUCT = 100_000
 
 SCRIPT_URL = "https://github.com/ascai1/muddler"
 LIMIT_NOTE = f"For larger inputs, use the full Python script at {SCRIPT_URL}"
@@ -67,8 +68,11 @@ def _validate_content(content: str) -> str | None:
     lines = [l for l in content.splitlines() if l.strip() and not l.startswith("#")]
     if len(lines) < 2:
         return "Input must have a header line and at least one scale."
-    if len(lines) - 1 > MAX_SCALE_ROWS:
+
+    scale_lines = lines[1:]
+    if len(scale_lines) > MAX_SCALE_ROWS:
         return f"Too many scale rows (max {MAX_SCALE_ROWS}). {LIMIT_NOTE}"
+
     header = lines[0].split()
     try:
         edo = int("".join(c for c in header[0] if c.isdigit()))
@@ -76,6 +80,24 @@ def _validate_content(content: str) -> str | None:
         return "Could not parse EDO size from header."
     if edo > MAX_EDO:
         return f"EDO too large (max {MAX_EDO}). {LIMIT_NOTE}"
+
+    def token_count(line):
+        return len([t for t in line.split() if t.lower() not in ('locked', 'lock')])
+
+    row_edos = [edo]
+    for line in scale_lines[:-1]:
+        row_edos.append(token_count(line))
+
+    product = 1
+    for row_edo in row_edos:
+        product *= row_edo
+        if product > MAX_EDO_PRODUCT:
+            detail = " × ".join(str(e) for e in row_edos)
+            return (
+                f"Input would generate too many combinations "
+                f"({detail} = {product} > {MAX_EDO_PRODUCT}). {LIMIT_NOTE}"
+            )
+
     return None
 
 

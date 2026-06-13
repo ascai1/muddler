@@ -22,7 +22,8 @@ export default function AboutModal({ onClose }) {
         </div>
         <div className="modal-body">
           <div className="modal-notice">
-            This is a limited web version: max 128-EDO, 6 scale rows, 4 KB input.
+            This is a limited web version: max 128-EDO, 4 scale rows, 4 KB input.{' '}
+            <b>The product of all scale EDO sizes must not exceed 100K.</b>{' '}
             For larger or more complex inputs, use the{' '}
             <a href="https://github.com/ascai1/muddler" target="_blank" rel="noopener">
               full Python script

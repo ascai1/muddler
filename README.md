@@ -8,6 +8,8 @@ For background on the theory, see the Xen Wiki:
 
 Made the UI with the help of Claude. Sorry. Anything past the initial commit in /frontend is just me.
 
+For the time being, I'm disabling web POST requests with more than 4 rows (whoever needs that can definitely run the script locally instead) and/or greater than 100K total product of all scale EDO sizes. I can definitely figure out a way to make the latter work one day, but xen music is kind of my hobby and right now this is already feeling a bit like work, so I'm just going to tell you all to run the Python script locally.
+
 ---
 
 ## Concept

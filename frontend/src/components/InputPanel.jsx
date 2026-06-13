@@ -12,6 +12,14 @@ export default function InputPanel({ onGenerate, status, loading }) {
     return rows;
   });
 
+  const MAX_ROWS = 4;
+  const MAX_PRODUCT = 100_000;
+
+  const edoCounts = rows.map(row => row.edo);
+  const edoProduct = edoCounts.reduce((p, n) => p * n, 1);
+  const tooManyRows = rows.length >= MAX_ROWS;
+  const tooLarge = edoProduct > MAX_PRODUCT;
+
   function updateRows(nextRows, currentEdo = edo) {
     setRows(recomputeEdos(nextRows, currentEdo));
   }
@@ -151,13 +159,17 @@ export default function InputPanel({ onGenerate, status, loading }) {
               ))}
             </div>
             <div className="add-row-bar">
-              <button className="btn-ghost" onClick={handleAddRow}>+ Add scale row</button>
+              <button className="btn-ghost" onClick={handleAddRow} disabled={tooManyRows}>
+                {tooManyRows ? `Max ${MAX_ROWS} scale rows` : '+ Add scale row'}
+              </button>
             </div>
           </>
         )}
         <div className="submit-bar">
-          <StatusMessage msg={status.msg} kind={status.kind} />
-          <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
+          {tooLarge
+            ? <span className="status-msg error">Too many combinations ({edoCounts.join(' × ')} = {edoProduct.toLocaleString()} &gt; {MAX_PRODUCT.toLocaleString()}). Reduce scale sizes.</span>
+            : <StatusMessage msg={status.msg} kind={status.kind} />}
+          <button className="btn-primary" onClick={handleSubmit} disabled={loading || tooLarge}>
             Generate muddles →
           </button>
         </div>
